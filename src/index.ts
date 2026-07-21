@@ -4,36 +4,46 @@ import fs from "fs"
 
 const router: Router = Router()
 
+fs.readFile('data.json', (err, data) => {
+  if (err){
+    fs.writeFileSync('data.json', "")
+  }
+})
+
 type TUser = {
   name: string,
-  email: string
+  todos: string[]
 }
 
 let userList: TUser[] = []
 
-router.get('/', (req, res) => {
-  res.send('Hello World!')
+
+router.post('/add', (req, res) => {
+  let name: string = req.body.name
+  let todo: string = req.body.todo
+  let index = userList.findIndex((element) => element.name === name) //Maybe problems in the future
+
+  if (index === -1) {
+    let newUser : TUser = {
+      name: name,
+      todos: [todo]
+    }
+    
+    userList.push(newUser)
+    res.send(`Todo added successfully for user ${name}.`)
+    return
+  }
+
+  userList[index]?.todos.push(todo)
+
+  console.log(userList)
+
+
+  res.send(`Todo added successfully for user ${name}.`)
 })
 
-router.get('/hello', (req, res) => {
-  res.json({ msg: "Hello world!"})
-})
 
-router.get('/echo/:id', (req, res) => {
-  let text: string = req.params.id
-  res.json({ id: text})
-})
-
-//Found help from this to sum an array of numbers for post
-//https://coreui.io/answers/how-to-sum-an-array-of-numbers-in-javascript/
-router.post('/sum', (req, res) => {
-  //console.log(req.body)
-  let list: number[] = req.body.numbers
-  let sumList = list.reduce((acc, num) => acc + num, 0)
-  //console.log(sumList)
-  res.json({ sum: sumList})
-})
-
+/*
 router.post('/users', (req, res) => {
   //console.log(req.body.email)
   
@@ -42,7 +52,7 @@ router.post('/users', (req, res) => {
 
   let newUser: TUser = {
     name: userName,
-    email: userEmail
+    todos: string[]
   }
 
   userList.push(newUser)
@@ -54,5 +64,5 @@ router.post('/users', (req, res) => {
 router.get('/users', (req, res) => {
   res.status(201).json({users: userList})
 })
-
+*/
 export default router

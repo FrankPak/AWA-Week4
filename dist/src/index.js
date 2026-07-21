@@ -1,41 +1,55 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const fs_1 = __importDefault(require("fs"));
 const router = (0, express_1.Router)();
+fs_1.default.readFile('data.json', (err, data) => {
+    if (err) {
+        fs_1.default.writeFileSync('data.json', "");
+    }
+});
 let userList = [];
-router.get('/', (req, res) => {
-    res.send('Hello World!');
+router.post('/add', (req, res) => {
+    let name = req.body.name;
+    let todo = req.body.todo;
+    let index = userList.findIndex((element) => element.name === name); //Maybe problems in the future
+    if (index === -1) {
+        let newUser = {
+            name: name,
+            todos: [todo]
+        };
+        userList.push(newUser);
+        res.send(`Todo added successfully for user ${name}.`);
+        return;
+    }
+    userList[index]?.todos.push(todo);
+    console.log(userList);
+    res.send(`Todo added successfully for user ${name}.`);
 });
-router.get('/hello', (req, res) => {
-    res.json({ msg: "Hello world!" });
-});
-router.get('/echo/:id', (req, res) => {
-    let text = req.params.id;
-    res.json({ id: text });
-});
-//Found help from this to sum an array of numbers for post
-//https://coreui.io/answers/how-to-sum-an-array-of-numbers-in-javascript/
-router.post('/sum', (req, res) => {
-    //console.log(req.body)
-    let list = req.body.numbers;
-    let sumList = list.reduce((acc, num) => acc + num, 0);
-    //console.log(sumList)
-    res.json({ sum: sumList });
-});
+/*
 router.post('/users', (req, res) => {
-    //console.log(req.body.email)
-    let userName = req.body.name;
-    let userEmail = req.body.email;
-    let newUser = {
-        name: userName,
-        email: userEmail
-    };
-    userList.push(newUser);
-    //console.log(userList)
-    res.send("User successfully added");
-});
+  //console.log(req.body.email)
+  
+  let userName: string = req.body.name
+  let userEmail: string = req.body.email
+
+  let newUser: TUser = {
+    name: userName,
+    todos: string[]
+  }
+
+  userList.push(newUser)
+  //console.log(userList)
+  
+  res.send("User successfully added")
+})
+
 router.get('/users', (req, res) => {
-    res.status(201).json({ users: userList });
-});
+  res.status(201).json({users: userList})
+})
+*/
 exports.default = router;
 //# sourceMappingURL=index.js.map
