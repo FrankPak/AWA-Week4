@@ -1,7 +1,9 @@
 function initialize() {
     const submitDataBtn = document.getElementById("submit-data")
     const TODOForm = document.getElementById("todoForm")
-    
+    const searchForm = document.getElementById("searchForm")
+    const searcDataBtn = document.getElementById("search")
+    const resSearchMsg = document.getElementById("searchMsg")
 
     submitDataBtn.addEventListener("click", async function () {
         
@@ -27,13 +29,36 @@ function initialize() {
 
     })
 
+    searcDataBtn.addEventListener("click", async function () {
+        const searchData = document.getElementById("searchInput")
+        const data = await fetch(`http://localhost:3000/todos/${searchData.value}`)
+        searchForm.reset()
+
+        if (data.status == 404) {
+        resSearchMsg.textContent = await data.text()
+        return
+        }
+        resSearchMsg.textContent = ""
+        let todosList = await data.json()
+        console.log(todosList)
+        todosList.forEach( todo => {
+            addUserWall(todo)
+        })
+       
+    })
+
+    
+
 }
 
-function addUserWall(name, email) {
-    const usersList = document.getElementById("userList")
+
+function addUserWall(todo) {
+    const searchTodoList = document.getElementById("ulTodoList")    
     const listItem = document.createElement("li")
-    listItem.append(`${name} - ${email}`)
-    usersList.appendChild(listItem)
+
+    listItem.append(`${todo}`)
+    searchTodoList.appendChild(listItem)
 }
+
 
 initialize()

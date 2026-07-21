@@ -29,6 +29,15 @@ router.post('/add', (req, res) => {
     console.log(userList);
     res.send(`Todo added successfully for user ${name}.`);
 });
+router.get('/todos/:id', (req, res) => {
+    let name = req.params.id;
+    let index = userList.findIndex((element) => element.name === name); //Maybe problems in the future
+    if (index === -1) {
+        res.status(404).json({ error: "User not found!" });
+        return;
+    }
+    res.send(userList[index]?.todos);
+});
 /*
 router.post('/users', (req, res) => {
   //console.log(req.body.email)
