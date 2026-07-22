@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
 import path  from "path"
 import fs from "fs"
-import { exit } from "process";
 
 const router: Router = Router()
 
@@ -47,6 +46,11 @@ router.get('/todos/:id', (req, res) => {
   let name: string = req.params.id
   let index = userList.findIndex((element) => element.name === name) //Maybe problems in the future
 
+  if (index === -1) {
+    res.send("User not found!")
+    return
+  }
+
   res.send(userList[index]?.todos)
  
 })
@@ -56,7 +60,7 @@ router.delete('/delete', (req, res) => {
   let index = userList.findIndex((element) => element.name === name) //Maybe problems in the future
   
   if (index === -1) {
-    res.status(404).json({ error: "User not found!" })
+    res.send("User not found!")
     return
   }
 

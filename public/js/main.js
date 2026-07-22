@@ -35,23 +35,29 @@ function initialize() {
     })
     
     searcDataBtn.addEventListener("click", async function () {
+        document.getElementById("ulTodoList").innerHTML = ""
+        resSearchMsg.textContent = ""
+        deleteUserBtn.setAttribute("hidden","true") //Resets everything if you change names
+
         const searchData = document.getElementById("searchInput")
         const data = await fetch(`http://localhost:3000/todos/${searchData.value}`)
+        const testData = await data.text()
+        console.log(testData)
 
-        if (data.status == 404) {
-        resSearchMsg.textContent = await data.text()
+        if (testData == "User not found!") {
+        resSearchMsg.textContent = testData
         return
         }
 
 
-        let todosList = await data.json()
+        const todosList = JSON.parse(testData)
+
         console.log(todosList)
         todosList.forEach( todo => {
             addUserWall(todo)
         })
         
         deleteUserBtn.removeAttribute("hidden")
-        resSearchMsg.textContent = ""
         
     })
 
