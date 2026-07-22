@@ -1,15 +1,19 @@
 function initialize() {
     const submitDataBtn = document.getElementById("submit-data")
+    const searcDataBtn = document.getElementById("search")
+    const deleteUserBtn = document.getElementById("deleteUser")
+
     const TODOForm = document.getElementById("todoForm")
     const searchForm = document.getElementById("searchForm")
-    const searcDataBtn = document.getElementById("search")
+    
+    const resMsg = document.getElementById("msg")
     const resSearchMsg = document.getElementById("searchMsg")
+    
 
     submitDataBtn.addEventListener("click", async function () {
         
         const nameData = document.getElementById("userInput").value
         const todoData = document.getElementById("todoInput").value
-        const resMsg = document.getElementById("msg")
 
         console.log(nameData + " front")
         console.log(todoData + " front")
@@ -23,28 +27,50 @@ function initialize() {
         })
         const response = await userData.text()
         console.log(response)
-        TODOForm.reset()
+
         resMsg.textContent = response
+        TODOForm.reset()
 
 
     })
-
+    
     searcDataBtn.addEventListener("click", async function () {
         const searchData = document.getElementById("searchInput")
         const data = await fetch(`http://localhost:3000/todos/${searchData.value}`)
-        searchForm.reset()
 
         if (data.status == 404) {
         resSearchMsg.textContent = await data.text()
         return
         }
-        resSearchMsg.textContent = ""
+
+
         let todosList = await data.json()
         console.log(todosList)
         todosList.forEach( todo => {
             addUserWall(todo)
         })
-       
+        
+        deleteUserBtn.removeAttribute("hidden")
+        resSearchMsg.textContent = ""
+        
+    })
+
+    deleteUserBtn.addEventListener("click", async function () {
+        const deleteData = document.getElementById("searchInput")
+        const deleteUserData = await fetch("http://localhost:3000/delete", {
+            method: "delete",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: '{ "name": "' + deleteData.value + '" }'
+        })
+        const responseDelete = await deleteUserData.text()
+        resSearchMsg.textContent = responseDelete
+
+        document.getElementById("ulTodoList").innerHTML = ""
+
+        deleteUserBtn.setAttribute("hidden","true")
+        searchForm.reset()
     })
 
     
