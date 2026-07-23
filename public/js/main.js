@@ -103,12 +103,27 @@ function addUserWall(name,todo) {
         const responseDelTodo = await responseDelTodoData.text()
         //console.log(responseDelTodo)
         const resSearchMsg = document.getElementById("searchMsg")
-        
         resSearchMsg.textContent = responseDelTodo
+        updateTodo(name)
     })
     aEvent.append(`${todo}`)
     listItem.appendChild(aEvent)
     searchTodoList.appendChild(listItem)
+}
+
+async function updateTodo(name) {
+    document.getElementById("todoList").innerHTML = ""
+
+    const data = await fetch(`http://localhost:3000/todos/${name}`)
+    const testData = await data.text()
+    //console.log(testData)
+
+    const todosList = JSON.parse(testData)
+
+    //console.log(todosList)
+    todosList.forEach(todo => {
+        addUserWall(name,todo)
+    })
 }
 
 
