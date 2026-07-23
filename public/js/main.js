@@ -5,9 +5,11 @@ function initialize() {
 
     const TODOForm = document.getElementById("todoForm")
     const searchForm = document.getElementById("searchForm")
+    const todoList = document.getElementById("todoList")
     
     const resMsg = document.getElementById("msg")
     const resSearchMsg = document.getElementById("searchMsg")
+ 
     
 
     submitDataBtn.addEventListener("click", async function () {
@@ -19,7 +21,7 @@ function initialize() {
         console.log(todoData + " front")
         
         const userData = await fetch("http://localhost:3000/add", {
-            method: "post",
+            method: "POST",
             headers: {
                 "Content-type": "application/json"
             },
@@ -35,7 +37,7 @@ function initialize() {
     })
     
     searcDataBtn.addEventListener("click", async function () {
-        document.getElementById("ulTodoList").innerHTML = ""
+        document.getElementById("todoList").innerHTML = ""
         resSearchMsg.textContent = ""
         deleteUserBtn.setAttribute("hidden","true") //Resets everything if you change names
 
@@ -53,8 +55,8 @@ function initialize() {
         const todosList = JSON.parse(testData)
 
         console.log(todosList)
-        todosList.forEach( todo => {
-            addUserWall(todo)
+        todosList.forEach(todo => {
+            addUserWall(searchData.value,todo)
         })
         
         deleteUserBtn.removeAttribute("hidden")
@@ -64,7 +66,7 @@ function initialize() {
     deleteUserBtn.addEventListener("click", async function () {
         const deleteData = document.getElementById("searchInput")
         const deleteUserData = await fetch("http://localhost:3000/delete", {
-            method: "delete",
+            method: "DELETE",
             headers: {
                 "Content-type": "application/json"
             },
@@ -73,22 +75,39 @@ function initialize() {
         const responseDelete = await deleteUserData.text()
         resSearchMsg.textContent = responseDelete
 
-        document.getElementById("ulTodoList").innerHTML = ""
+        document.getElementById("todoList").innerHTML = ""
 
         deleteUserBtn.setAttribute("hidden","true")
         searchForm.reset()
     })
 
-    
 
 }
 
 
-function addUserWall(todo) {
-    const searchTodoList = document.getElementById("ulTodoList")    
+function addUserWall(name,todo) {
+    const searchTodoList = document.getElementById("todoList")    
     const listItem = document.createElement("li")
+    const aEvent = document.createElement("a")
 
-    listItem.append(`${todo}`)
+    aEvent.className = "delete-task"
+    //smarter way probably putting addEventlistener to the whole set to initlaize func and 
+    aEvent.addEventListener("click", async function () {
+        const responseDelTodoData = await fetch("http://localhost:3000/update", {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: '{ "name": "' + name + '", "todo": "' + todo + '"  }'
+        })
+        const responseDelTodo = await responseDelTodoData.text()
+        //console.log(responseDelTodo)
+        const resSearchMsg = document.getElementById("searchMsg")
+        
+        resSearchMsg.textContent = responseDelTodo
+    })
+    aEvent.append(`${todo}`)
+    listItem.appendChild(aEvent)
     searchTodoList.appendChild(listItem)
 }
 

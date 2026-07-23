@@ -70,7 +70,22 @@ router.delete('/delete', (req, res) => {
  
 })
 
+router.put('/update', (req, res) => {
+  let name: string = req.body.name
+  let todo: string = req.body.todo
+  let user = userList.find((element) => element.name === name) //this way only the error of possibly undefined for splicing was fixed
+  if (!user) {
+    res.send("User not found!")
+    return
+  }
 
+  let todoIndex = user.todos.indexOf(todo) 
+  
+  user.todos.splice(todoIndex,1) 
+
+  res.send(`Todo deleted successfully.`)
+ 
+})
 /*
 router.post('/users', (req, res) => {
   //console.log(req.body.email)
